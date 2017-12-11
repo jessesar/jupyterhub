@@ -134,8 +134,10 @@ class User(Base):
         return {s.name: s for s in self._orm_spawners}
 
     admin = Column(Boolean, default=False)
+    
     last_activity = Column(DateTime, default=datetime.utcnow)
-
+    exam_finished = Column(DateTime)
+    
     api_tokens = relationship("APIToken", backref="user")
     cookie_id = Column(Unicode(255), default=new_token, nullable=False, unique=True)
     # User.state is actually Spawner state

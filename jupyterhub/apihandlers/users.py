@@ -269,5 +269,5 @@ default_handlers = [
     (r"/api/users/([^/]+)", UserAPIHandler),
     (r"/api/users/([^/]+)/server", UserServerAPIHandler),
     (r"/api/users/([^/]+)/servers/([^/]*)", UserServerAPIHandler),
-    (r"/api/users/([^/]+)/admin-access", UserAdminAccessAPIHandler),
+    (r"/api/users/([^/]+)/admin-access", UserAdminAccessAPIHandler)
 ]

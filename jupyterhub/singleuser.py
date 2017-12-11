@@ -138,7 +138,7 @@ flags.update({
     }, "Disable user-controlled configuration of the notebook server.")
 })
 
-page_template = """
+'''page_template = """
 {% extends "templates/page.html" %}
 
 {% block header_buttons %}
@@ -149,6 +149,24 @@ page_template = """
        class='btn btn-default btn-sm navbar-btn pull-right'
        style='margin-right: 4px; margin-left: 2px;'>
         Control Panel
+    </a>
+</span>
+{% endblock %}
+{% block logo %}
+<img src='{{logo_url}}' alt='Jupyter Notebook'/>
+{% endblock logo %}
+"""'''
+
+page_template = """
+{% extends "templates/page.html" %}
+
+{% block header_buttons %}
+
+<span>
+    <a href='{{hub_end_session_url}}'
+       class='btn btn-success navbar-btn pull-right'
+       style='margin-right: 4px; margin-left: 2px;'>
+        Stuur tentamen in
     </a>
 </span>
 {% endblock %}
@@ -438,6 +456,9 @@ class SingleUserNotebookApp(NotebookApp):
 
         env.globals['hub_control_panel_url'] = \
             self.hub_host + url_path_join(self.hub_prefix, 'home')
+            
+        env.globals['hub_end_session_url'] = \
+            self.hub_host + url_path_join(self.hub_prefix, 'end-session')
 
         # patch jinja env loading to modify page template
         def get_page(name):

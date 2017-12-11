@@ -13,6 +13,9 @@ from .. import orm
 from ..utils import admin_only, url_path_join
 from .base import BaseHandler
 
+import json
+import datetime
+import logging
 
 class RootHandler(BaseHandler):
     """Render the Hub root page.
@@ -160,18 +163,24 @@ class AdminHandler(BaseHandler):
 
     @admin_only
     def get(self):
-        available = {'name', 'admin', 'running', 'last_activity'}
+        available = {'name', 'admin', 'running', 'last_activity', 'exam_finished'}
+        
         default_sort = ['admin', 'name']
         mapping = {
             'running': orm.Spawner.server_id,
         }
+        
         for name in available:
             if name not in mapping:
                 mapping[name] = getattr(orm.User, name)
-
+        
+        #app_log = logging.getLogger("tornado.application")
+        #app_log.info("Mapping: {0}".format(mapping))
+        
         default_order = {
             'name': 'asc',
             'last_activity': 'desc',
+            'exam_finished': 'desc',
             'admin': 'desc',
             'running': 'desc',
         }
@@ -257,6 +266,44 @@ class ProxyErrorHandler(BaseHandler):
 
         self.write(html)
 
+class EndSessionHandler(BaseHandler):
+	"""End the user's session: stop the server, log out and show message."""
+	
+	@web.authenticated
+	@gen.coroutine
+	def get(self):
+	    user = self.get_current_user()
+	    
+	    html = self.render_template('end-session.html',
+	        user=user,
+	    )
+	    self.finish(html)
+	    
+class DoneHandler(BaseHandler):
+	@gen.coroutine
+	def get(self):
+	    html = self.render_template('session-done.html')
+	    self.finish(html)
+
+class SetUserFinishedHandler(BaseHandler):
+	
+	@web.authenticated
+	@gen.coroutine
+	def post(self, name):
+		current_user = self.get_current_user()
+		
+		if name == current_user.name:
+			user = self.find_user(name)
+			if user is None:
+				raise web.HTTPError(404)
+			else:
+				setattr(user, 'exam_finished', datetime.datetime.now())
+				
+				self.db.commit()
+				self.write('ok')
+		else:
+			raise web.HTTPError(401)
+
 
 default_handlers = [
     (r'/?', RootHandler),
@@ -265,4 +312,8 @@ default_handlers = [
     (r'/spawn', SpawnHandler),
     (r'/token', TokenPageHandler),
     (r'/error/(\d+)', ProxyErrorHandler),
+    
+    (r'/end-session', EndSessionHandler),
+    (r'/done', DoneHandler),
+    (r'/set-user-finished/([^/]+)', SetUserFinishedHandler)
 ]

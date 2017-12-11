@@ -137,6 +137,7 @@ class APIHandler(BaseHandler):
         'name': str,
         'admin': bool,
         'groups': list,
+        'exam_finished': type(None)
     }
 
     _group_model_types = {

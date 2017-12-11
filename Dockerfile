@@ -61,4 +61,13 @@ EXPOSE 8000
 
 LABEL org.jupyter.service="jupyterhub"
 
+# UvA dependencies
+RUN pip install lxml
+
+# SwarmSpawner
+RUN pip install https://github.com/jessesar/SwarmSpawner/archive/master.zip
+
+# CASAuthenticator
+RUN pip install https://github.com/jessesar/jhub_cas_authenticator/archive/master.zip
+
 CMD ["jupyterhub"]
