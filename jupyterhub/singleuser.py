@@ -166,7 +166,7 @@ page_template = """
     <a href='{{hub_end_session_url}}'
        class='btn btn-success navbar-btn pull-right'
        style='margin-right: 4px; margin-left: 2px;'>
-        <em class="fa-flag-checkered" style="margin-right: 2px;"></em> Stuur tentamen in
+        <strong>Stuur tentamen in &rsaquo;</strong>
     </a>
 </span>
 {% endblock %}
