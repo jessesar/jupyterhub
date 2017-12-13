@@ -163,12 +163,39 @@ page_template = """
 {% block header_buttons %}
 
 <span>
-    <a href='{{hub_end_session_url}}'
+    <a id="submit-exam"
        class='btn btn-success navbar-btn pull-right'
        style='margin-right: 4px; margin-left: 2px;'>
         <strong style="font-weight: 500;"><i class="fa fa-flag-checkered" style="margin-right: 5px;"></i> Stuur tentamen in</strong>
     </a>
 </span>
+
+<script type="text/javascript">
+	$('#submit-exam').on('click', function() {
+		$('#notebook-container').css('opacity', '0.3')
+		
+		var did_run_all = confirm("Heb je 'Kernel' -> 'Restart & Run all' uitgevoerd?")
+		if(did_run_all) {
+			var this_is_it = confirm("Als je op OK klikt, wordt je tentamen beëindigd en ingestuurd. Er is dan geen weg terug. Weet je zeker dat je het tentamen wil insturen?")
+			
+			if(this_is_it) {
+				$('#submit-exam').text('Tentamen insturen...')
+				
+				if('notebook' in IPython) {
+					IPython.notebook.save_checkpoint()
+				}
+				
+				setTimeout(function() {
+					window.location.href = '{{hub_end_session_url}}'
+				}, 1500)
+			} else {
+				$('#notebook-container').css('opacity', '1.0')
+			}
+		} else {
+			$('#notebook-container').css('opacity', '1.0')
+		}
+	});
+</script>
 {% endblock %}
 {% block logo %}
 <img src='{{logo_url}}' alt='Jupyter Notebook'/>
