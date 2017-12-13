@@ -198,7 +198,7 @@ page_template = """
 	
 	setInterval(function() {
 		if(document.cookie.indexOf("ended-session=") > -1) {
-			window.location.href = '{{hub_end_session_url}}'
+			window.location.href = '{{hub_session_ended_url}}'
 		}
 	}, 3000)
 </script>
@@ -492,6 +492,9 @@ class SingleUserNotebookApp(NotebookApp):
             
         env.globals['hub_end_session_url'] = \
             self.hub_host + url_path_join(self.hub_prefix, 'end-session')
+            
+        env.globals['hub_session_ended_url'] = \
+            self.hub_host + url_path_join(self.hub_prefix, 'done')
 
         # patch jinja env loading to modify page template
         def get_page(name):
