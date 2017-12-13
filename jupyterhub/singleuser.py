@@ -171,7 +171,7 @@ page_template = """
 </span>
 
 <script type="text/javascript">
-	$('#submit-exam').on('click', function() {
+	document.getElementById('submit-exam').onclick = function() {
 		$('#notebook-container').css('opacity', '0.3')
 		
 		var did_run_all = confirm("Heb je 'Kernel' -> 'Restart & Run all' uitgevoerd?")
@@ -194,7 +194,7 @@ page_template = """
 		} else {
 			$('#notebook-container').css('opacity', '1.0')
 		}
-	});
+	}
 </script>
 {% endblock %}
 {% block logo %}
