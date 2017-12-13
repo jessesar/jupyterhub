@@ -16,6 +16,7 @@ from .base import BaseHandler
 import json
 import datetime
 import logging
+import time
 
 class RootHandler(BaseHandler):
     """Render the Hub root page.
@@ -273,6 +274,8 @@ class EndSessionHandler(BaseHandler):
 	@gen.coroutine
 	def get(self):
 	    user = self.get_current_user()
+	    
+	    self.set_cookie('ended-session', str(time.time()))
 	    
 	    html = self.render_template('end-session.html',
 	        user=user,

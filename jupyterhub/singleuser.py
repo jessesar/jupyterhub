@@ -195,6 +195,12 @@ page_template = """
 			$('#notebook-container').css('opacity', '1.0')
 		}
 	}
+	
+	setInterval(function() {
+		if(document.cookie.indexOf("ended-session=") > -1) {
+			window.location.href = '{{hub_end_session_url}}'
+		}
+	}, 3000)
 </script>
 {% endblock %}
 {% block logo %}
