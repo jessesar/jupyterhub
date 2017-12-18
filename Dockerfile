@@ -65,9 +65,9 @@ LABEL org.jupyter.service="jupyterhub"
 RUN pip install lxml
 
 # SwarmSpawner
-RUN pip install https://github.com/jessesar/SwarmSpawner/archive/master.zip
+RUN pip install https://github.com/jessesar/SwarmSpawner/archive/master.zip?1234
 
 # CASAuthenticator
-RUN pip install https://github.com/jessesar/jhub_cas_authenticator/archive/master.zip
+RUN pip install https://github.com/jessesar/jhub_cas_authenticator/archive/master.zip?1234
 
 CMD ["jupyterhub"]

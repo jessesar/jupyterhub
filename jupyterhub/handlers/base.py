@@ -3,6 +3,13 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+import os
+import json
+import datetime
+import dateutil.parser as dp
+
+import operator
+
 import copy
 import re
 import time
@@ -330,6 +337,32 @@ class BaseHandler(RequestHandler):
             else:
                 next_url = self.hub.base_url
         return next_url
+
+    def get_eligible_exam(self):
+        exams_path = os.environ['EXAM_DEFINITIONS_FILE']
+        if os.path.exists(exams_path):
+            with open(exams_path) as f:
+                data = json.load(f)
+                
+            def isEligible(exam):
+                if exam['exam_start']:
+                    if datetime.datetime.now() >= dp.parse(exam['exam_start']):
+                        return True
+                    else:
+                        return False
+                else:
+                    return True
+                
+            exams = data['exams']
+            eligible = [ exam for exam_name, exam in exams.items() if isEligible(exam) ]
+            
+            if len(eligible):
+                return sorted(eligible, key=lambda x: x['exam_start'], reverse=True)[0]
+            else:
+                return None
+        else:
+            return None
+    
 
     @gen.coroutine
     def login_user(self, data=None):

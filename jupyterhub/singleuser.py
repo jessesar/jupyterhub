@@ -201,6 +201,10 @@ page_template = """
 			window.location.href = '{{hub_session_ended_url}}'
 		}
 	}, 3000)
+	
+	setTimeout(function() {
+    	IPython.notebook.set_autosave_interval(5000);
+    }, 5000)
 </script>
 {% endblock %}
 {% block logo %}

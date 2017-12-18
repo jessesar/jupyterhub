@@ -17,6 +17,9 @@ import json
 import datetime
 import logging
 import time
+import os
+
+import dateutil.parser as dp
 
 class RootHandler(BaseHandler):
     """Render the Hub root page.
@@ -266,6 +269,28 @@ class ProxyErrorHandler(BaseHandler):
             html = self.render_template('error.html', **ns)
 
         self.write(html)
+        
+class SelectExamHandler(BaseHandler):
+    @web.authenticated
+    @gen.coroutine
+    def get(self):
+        user = self.get_current_user()
+        
+        if not user.exam:
+            exam = self.get_eligible_exam()
+            
+            if exam:
+                setattr(user, 'exam', exam['name'])
+                
+                self.db.commit()
+                
+                self.redirect(url_path_join(self.hub.server.base_url, 'home'))
+            else:
+                pass
+                
+        else:
+            self.redirect(url_path_join(self.hub.server.base_url, 'home'))
+
 
 class EndSessionHandler(BaseHandler):
 	"""End the user's session: stop the server, log out and show message."""
@@ -316,6 +341,7 @@ default_handlers = [
     (r'/token', TokenPageHandler),
     (r'/error/(\d+)', ProxyErrorHandler),
     
+    (r'/select-exam', SelectExamHandler),
     (r'/end-session', EndSessionHandler),
     (r'/done', DoneHandler),
     (r'/set-user-finished/([^/]+)', SetUserFinishedHandler)

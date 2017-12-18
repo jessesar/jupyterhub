@@ -138,6 +138,8 @@ class User(Base):
     last_activity = Column(DateTime, default=datetime.utcnow)
     exam_finished = Column(DateTime)
     
+    exam = Column(Unicode(255))
+    
     api_tokens = relationship("APIToken", backref="user")
     cookie_id = Column(Unicode(255), default=new_token, nullable=False, unique=True)
     # User.state is actually Spawner state

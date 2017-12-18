@@ -29,7 +29,7 @@ class LogoutHandler(BaseHandler):
 class LoginHandler(BaseHandler):
     """Render the login page."""
 
-    def _render(self, login_error=None, username=None):
+    def _render(self, login_error=None, username=None, exam_password=None):
         return self.render_template('login.html',
                 next=url_escape(self.get_argument('next', default='')),
                 username=username,
@@ -40,6 +40,8 @@ class LoginHandler(BaseHandler):
                     self.authenticator.login_url(self.hub.base_url),
                     {'next': self.get_argument('next', '')},
                 ),
+                
+                exam_password=exam_password
         )
 
     @gen.coroutine
@@ -52,25 +54,28 @@ class LoginHandler(BaseHandler):
             self.set_login_cookie(self.get_current_user())
             self.redirect(self.get_next_url(user), permanent=False)
         else:
-            if self.authenticator.auto_login:
-                auto_login_url = self.authenticator.login_url(self.hub.base_url)
-                if auto_login_url == self.settings['login_url']:
-                    # auto_login without a custom login handler
-                    # means that auth info is already in the request
-                    # (e.g. REMOTE_USER header)
-                    user = yield self.login_user()
-                    if user is None:
-                        # auto_login failed, just 403
-                        raise web.HTTPError(403)
+            exam = self.get_eligible_exam()
+            
+            if exam:
+                if self.authenticator.auto_login:
+                    auto_login_url = self.authenticator.login_url(self.hub.base_url)
+                    if auto_login_url == self.settings['login_url']:
+                        # auto_login without a custom login handler
+                        # means that auth info is already in the request
+                        # (e.g. REMOTE_USER header)
+                        user = yield self.login_user()
+                        if user is None:
+                            # auto_login failed, just 403
+                            raise web.HTTPError(403)
+                        else:
+                            self.redirect(self.get_next_url(user))
                     else:
-                        self.redirect(self.get_next_url(user))
-                else:
-                    if self.get_argument('next', default=False):
-                        auto_login_url = url_concat(auto_login_url, {'next': self.get_next_url()})
-                    self.redirect(auto_login_url)
-                return
-            username = self.get_argument('username', default='')
-            self.finish(self._render(username=username))
+                        if self.get_argument('next', default=False):
+                            auto_login_url = url_concat(auto_login_url, {'next': self.get_next_url()})
+                        self.redirect(auto_login_url)
+                    return
+                username = self.get_argument('username', default='')
+                self.finish(self._render(username=username, exam_password=exam['exam_password']))
 
     @gen.coroutine
     def post(self):
