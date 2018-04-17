@@ -65,9 +65,13 @@ LABEL org.jupyter.service="jupyterhub"
 RUN pip install lxml
 
 # SwarmSpawner
-RUN pip install https://github.com/jessesar/SwarmSpawner/archive/master.zip?1234
+RUN pip install uva-swarmspawner
 
 # CASAuthenticator
-RUN pip install https://github.com/jessesar/jhub_cas_authenticator/archive/master.zip?1234
+RUN pip install uva-jhub_cas_authenticator
+
+ENV TZ 'Europe/Amsterdam'
+RUN echo $TZ > /etc/timezone && apt-get update && apt-get install -y tzdata && rm /etc/localtime && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+	dpkg-reconfigure -f noninteractive tzdata && apt-get clean
 
 CMD ["jupyterhub"]

@@ -84,7 +84,7 @@ for d, _, _ in os.walk('jupyterhub'):
         packages.append(d.replace(os.path.sep, '.'))
 
 setup_args = dict(
-    name                = 'jupyterhub',
+    name                = 'uva-jupyterhub',
     scripts             = glob(pjoin('scripts', '*')),
     packages            = packages,
                         # dummy, so that install_data doesn't get skipped

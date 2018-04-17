@@ -276,21 +276,16 @@ class SelectExamHandler(BaseHandler):
     def get(self):
         user = self.get_current_user()
         
-        if not user.exam:
-            exam = self.get_eligible_exam()
+        exam = self.get_eligible_exam()
+        
+        if exam:
+            setattr(user, 'exam', exam['name'])
             
-            if exam:
-                setattr(user, 'exam', exam['name'])
-                
-                self.db.commit()
-                
-                self.redirect(url_path_join(self.hub.server.base_url, 'home'))
-            else:
-                pass
-                
-        else:
+            self.db.commit()
+            
             self.redirect(url_path_join(self.hub.server.base_url, 'home'))
-
+        else:
+            pass
 
 class EndSessionHandler(BaseHandler):
 	"""End the user's session: stop the server, log out and show message."""
@@ -325,7 +320,7 @@ class SetUserFinishedHandler(BaseHandler):
 			if user is None:
 				raise web.HTTPError(404)
 			else:
-				setattr(user, 'exam_finished', datetime.datetime.now())
+				setattr(user, 'exam_finished', datetime.datetime.utcnow())
 				
 				self.db.commit()
 				self.write('ok')
